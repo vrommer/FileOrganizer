@@ -72,7 +72,8 @@ public class ContentOrganizer {
 		moveContentToRelevantFolder(classifiedContent);	
 	}	
 
-	private Map<ContentType, ArrayList<Path>> classifyContent(Map<String, ArrayList<Path>> rootContent) {
+	private Map<ContentType, ArrayList<Path>> classifyContent(Map<String, ArrayList<Path>> rootContent) 
+			throws IOException {
 		Map<ContentType, ArrayList<Path>> classifiedContent = new HashMap<>();
 		for(ContentType type: ContentType.values()) {
 			classifiedContent.put(type, new ArrayList<>());
@@ -80,7 +81,7 @@ public class ContentOrganizer {
 		classifyFiles(rootContent.get(FILES), classifiedContent);
 		classifyFolders(rootContent.get(FOLDERS), classifiedContent);
 		classifiedContent.forEach((contentType, contentList)->{
-			System.out.println("List of all " + contentType + " files: ****************************");
+			System.out.println("**************************** List of all " + contentType + " files: ****************************");
 			contentList.forEach(file->{
 				System.out.println(file.getFileName());
 			});
@@ -88,13 +89,21 @@ public class ContentOrganizer {
 		return null;
 	}
 
-	private void classifyFolders(ArrayList<Path> folders, Map<ContentType, ArrayList<Path>> classifiedContent) {
-		// TODO Auto-generated method stub
+	private void classifyFolders(ArrayList<Path> foldersList, Map<ContentType, ArrayList<Path>> classifiedContent) {
+		foldersList.forEach(folder -> {
+			try {
+				Map <String, ArrayList<Path>> content = getAllContentInFolder(folder);
+				ArrayList<Path> filesInFolder = content.get(FILES);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		
 	}
 
-	private void classifyFiles(ArrayList<Path> files, Map<ContentType, ArrayList<Path>> classifiedContent) {
-		files.forEach(file -> {
+	private void classifyFiles(ArrayList<Path> filesList, Map<ContentType, ArrayList<Path>> classifiedContent) {
+		filesList.forEach(file -> {
 			String[] nameParts = file.getFileName().toString().split("[.]");
 			String suffix = nameParts[nameParts.length-1];
 			ContentType fileType = suffixMap.get(suffix);
@@ -107,6 +116,12 @@ public class ContentOrganizer {
 		
 	}
 
+	private Map<String, ArrayList<Path>> getAllContentInFolder(Path folder) throws IOException {
+		SimpleFileVisitor<Path> visitor = new OrganizerFileVisitor();
+		Files.walkFileTree(folder, visitor);
+		return ((OrganizerFileVisitor) visitor).getVisitResults();
+	}
+	
 	private Map<String, ArrayList<Path>> getRootContent() throws IOException {
 		int maxDepth = 1;
 		Set<FileVisitOption> options = new HashSet<>();
