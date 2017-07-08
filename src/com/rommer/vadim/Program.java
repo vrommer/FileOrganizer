@@ -1,8 +1,15 @@
 package com.rommer.vadim;
 
+import java.io.IOException;
+
 public class Program {
 
 	public static void main(String[] args) {
-		ContentOrganizer.getOrganizer("D:\\Downloads\\Completed").organize();	
+		try {
+			ContentOrganizer.getOrganizer("D:\\Downloads\\Completed").organize();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 }

@@ -1,9 +1,17 @@
 package com.rommer.vadim;
 
+import java.awt.List;
+import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ContentOrganizer {
 	
@@ -22,6 +30,7 @@ public class ContentOrganizer {
 		suffixMap.put("rar", ContentType.ARCHIVE);
 		suffixMap.put("zip", ContentType.ARCHIVE);
 		suffixMap.put("7z", ContentType.ARCHIVE);
+		
 	}
 	
 	/**
@@ -52,34 +61,52 @@ public class ContentOrganizer {
 	
 	/**
 	 * Organizes a content of the folder.
+	 * @throws IOException 
 	 */
-	public void organize() {
-		System.out.println("Organizing");
+	public void organize() throws IOException {
+		Map<String, ArrayList<Path>> rootContent = getRootContent();
+		rootContent.forEach((k,v)->{
+			((Iterable<?>) v).forEach(entry->{
+				
+			});
+		});
 		boolean newContent = true;
 		while(newContent) {
-			getContentType();
+			try {
+				getContentType();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			moveContentToRelevantFolder();	
 			newContent = false;
 		}	
+	}	
+
+	private Map<String, ArrayList<Path>> getRootContent() throws IOException {
+		Set<FileVisitOption> options = new HashSet<>();
+		SimpleFileVisitor<Path> visitor = new OrganizerFileVisitor();
+		Files.walkFileTree(path, options, 1, visitor);
+		return ((OrganizerFileVisitor) visitor).getVisitResults();
 	}
-	
+
 	/**
 	 * Moves a single content (file or directory) to the relevant content folder.
 	 */
 	private void moveContentToRelevantFolder() {
 		// TODO Auto-generated method stub
-		System.out.println("Moving content to elevant folders");
+		System.out.println("Moving content to relevant folders");
 		
 	}
 	
 	/**
 	 * Retrieves the type of a file or folder
+	 * @throws IOException 
 	 */
-	private void getContentType() {
+	private void getContentType() throws IOException {
 		// Read a folder and get all extensions.
 		// Find out the type of content.
 		// return the type of content.	
-		System.out.println("Getting content");
 	}
 }
 
