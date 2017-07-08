@@ -12,14 +12,12 @@ import java.util.Map;
 
 public class OrganizerFileVisitor extends SimpleFileVisitor<Path> {
 	
-	private static final String FILES = "files";
-	private static final String FOLDERS = "folders";
 	private Map<String, ArrayList<Path>> visitResults;
 	
 	{
 		visitResults = new HashMap<>();
-		visitResults.put(FILES, new ArrayList<>());
-		visitResults.put(FOLDERS, new ArrayList<>());
+		visitResults.put(ContentOrganizer.FILES, new ArrayList<>());
+		visitResults.put(ContentOrganizer.FOLDERS, new ArrayList<>());
 	}
 	
 	public Map<String,ArrayList<Path>> getVisitResults() { return visitResults; }
@@ -44,7 +42,6 @@ public class OrganizerFileVisitor extends SimpleFileVisitor<Path> {
 		else if (attrs.isDirectory() ) {
 			folders.add(file);
 		}
-		System.out.println(file);
 		return FileVisitResult.CONTINUE;
 	}
 

@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,6 +16,8 @@ import java.util.Set;
 
 public class ContentOrganizer {
 	
+	public static final String FILES = "files";
+	public static final String FOLDERS = "folders";
 	private Map<String, ContentType> suffixMap;
 	private Path path;
 	
@@ -65,23 +68,44 @@ public class ContentOrganizer {
 	 */
 	public void organize() throws IOException {
 		Map<String, ArrayList<Path>> rootContent = getRootContent();
-		rootContent.forEach((k,v)->{
-			((Iterable<?>) v).forEach(entry->{
-				
+		Map<ContentType, ArrayList<Path>> classifiedContent = classifyContent(rootContent);
+		moveContentToRelevantFolder(classifiedContent);	
+	}	
+
+	private Map<ContentType, ArrayList<Path>> classifyContent(Map<String, ArrayList<Path>> rootContent) {
+		Map<ContentType, ArrayList<Path>> classifiedContent = new HashMap<>();
+		for(ContentType type: ContentType.values()) {
+			classifiedContent.put(type, new ArrayList<>());
+		}
+		classifyFiles(rootContent.get(FILES), classifiedContent);
+		classifyFolders(rootContent.get(FOLDERS), classifiedContent);
+		classifiedContent.forEach((contentType, contentList)->{
+			System.out.println("List of all " + contentType + " files: ****************************");
+			contentList.forEach(file->{
+				System.out.println(file.getFileName());
 			});
 		});
-		boolean newContent = true;
-		while(newContent) {
-			try {
-				getContentType();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			moveContentToRelevantFolder();	
-			newContent = false;
-		}	
-	}	
+		return null;
+	}
+
+	private void classifyFolders(ArrayList<Path> folders, Map<ContentType, ArrayList<Path>> classifiedContent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void classifyFiles(ArrayList<Path> files, Map<ContentType, ArrayList<Path>> classifiedContent) {
+		files.forEach(file -> {
+			String[] nameParts = file.getFileName().toString().split("[.]");
+			String suffix = nameParts[nameParts.length-1];
+			ContentType fileType = suffixMap.get(suffix);
+			classifiedContent.get(fileType).add(file);
+		});		
+	}
+
+	private void moveContentToRelevantFolder(Map<ContentType, ArrayList<Path>> classifiedContent) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private Map<String, ArrayList<Path>> getRootContent() throws IOException {
 		int maxDepth = 1;
@@ -98,16 +122,6 @@ public class ContentOrganizer {
 		// TODO Auto-generated method stub
 		System.out.println("Moving content to relevant folders");
 		
-	}
-	
-	/**
-	 * Retrieves the type of a file or folder
-	 * @throws IOException 
-	 */
-	private void getContentType() throws IOException {
-		// Read a folder and get all extensions.
-		// Find out the type of content.
-		// return the type of content.	
 	}
 }
 
