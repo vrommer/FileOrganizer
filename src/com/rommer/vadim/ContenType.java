@@ -1,5 +1,5 @@
 package com.rommer.vadim;
 
-public enum ContenTypes {
+public enum ContenType {
 
 }

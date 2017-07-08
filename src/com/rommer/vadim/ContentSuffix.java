@@ -1,6 +1,6 @@
 package com.rommer.vadim;
 
-public enum ContentType {
+public enum ContentSuffix {
 	PDF		("pdf", "book"), 
 	EPUB	("epub", "book"), 
 	ISO		("iso", "image"), 
@@ -10,7 +10,7 @@ public enum ContentType {
 	
 	private final String type;
 	private final String name;
-	private ContentType(String name, String type) {
+	private ContentSuffix(String name, String type) {
 		this.type = type;
 		this.name = name;
 	}
