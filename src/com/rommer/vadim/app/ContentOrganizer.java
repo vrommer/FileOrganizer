@@ -1,6 +1,5 @@
 package com.rommer.vadim.app;
 
-import java.awt.List;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -8,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,10 +17,12 @@ public class ContentOrganizer {
 	public static final String FILES = "files";
 	public static final String FOLDERS = "folders";
 	private Map<String, ContentType> suffixMap;
+	private Map<ContentType, Path> pathsMap;
 	private Path path;
 	
 	{
 		suffixMap = new HashMap<>();
+		pathsMap = new HashMap<>();
 		suffixMap.put("pdf", ContentType.BOOK);
 		suffixMap.put("epub", ContentType.BOOK);
 		suffixMap.put("iso", ContentType.IMAGE);
@@ -44,10 +44,12 @@ public class ContentOrganizer {
 	 */
 	private ContentOrganizer(String path) {
 		this.path = Paths.get(path);
+		setUpContentFolders();
 	}
 	
 	private ContentOrganizer(Path path) {
 		this.path = path;
+		setUpContentFolders();
 	}
 	
 	public Path getPath() { return this.path; }
@@ -71,6 +73,13 @@ public class ContentOrganizer {
 		Map<ContentType, ArrayList<Path>> classifiedContent = classifyContent(rootContent);
 		moveContentToRelevantFolder(classifiedContent);	
 	}	
+	
+	private void setUpContentFolders() {
+		for (ContentType type: ContentType.values()) {
+			pathsMap.put(type, Paths.get(this.path.getParent().toString(), type.toString()));
+			System.out.println(String.format("Setting up folder %s for %s", pathsMap.get(type), type));
+		}
+	}
 
 	private Map<ContentType, ArrayList<Path>> classifyContent(Map<String, ArrayList<Path>> rootContent) 
 			throws IOException {
@@ -94,6 +103,25 @@ public class ContentOrganizer {
 			try {
 				Map <String, ArrayList<Path>> content = getAllContentInFolder(folder);
 				ArrayList<Path> filesInFolder = content.get(FILES);
+				Set<ContentType> typesSetInFolder = new HashSet<>();
+				filesInFolder.forEach(file -> {
+					typesSetInFolder.add(getContentType(file));
+				});	
+				if (typesSetInFolder.contains(ContentType.SOFTWARE)) {
+					classifiedContent.get(ContentType.SOFTWARE).add(folder);
+				}
+				else if (typesSetInFolder.contains(ContentType.IMAGE)) {
+					classifiedContent.get(ContentType.IMAGE).add(folder);
+				}
+				else if (typesSetInFolder.contains(ContentType.VIDEO)) {
+					classifiedContent.get(ContentType.VIDEO).add(folder);
+				}
+				else if (typesSetInFolder.contains(ContentType.BOOK)) {
+					classifiedContent.get(ContentType.BOOK).add(folder);
+				}
+				else if (typesSetInFolder.contains(ContentType.ARCHIVE)) {
+					classifiedContent.get(ContentType.ARCHIVE).add(folder);
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,10 +132,7 @@ public class ContentOrganizer {
 
 	private void classifyFiles(ArrayList<Path> filesList, Map<ContentType, ArrayList<Path>> classifiedContent) {
 		filesList.forEach(file -> {
-			String[] nameParts = file.getFileName().toString().split("[.]");
-			String suffix = nameParts[nameParts.length-1];
-			ContentType fileType = suffixMap.get(suffix);
-			classifiedContent.get(fileType).add(file);
+			classifiedContent.get(getContentType(file)).add(file);
 		});		
 	}
 
@@ -137,6 +162,13 @@ public class ContentOrganizer {
 		// TODO Auto-generated method stub
 		System.out.println("Moving content to relevant folders");
 		
+	}
+	
+	private ContentType getContentType(Path file) {
+		String[] nameParts = file.getFileName().toString().split("[.]");
+		String suffix = nameParts[nameParts.length-1];
+		ContentType fileType = suffixMap.get(suffix);
+		return fileType;
 	}
 }
 

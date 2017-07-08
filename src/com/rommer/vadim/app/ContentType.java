@@ -1,11 +1,11 @@
 package com.rommer.vadim.app;
 
 public enum ContentType {
-	BOOK		("book"), 
-	IMAGE		("cd image"), 
-	VIDEO		("video"), 
-	SOFTWARE	("software"), 
-	ARCHIVE		("archive");
+	BOOK		("eBooks"), 
+	IMAGE		("Images"), 
+	VIDEO		("Movies"), 
+	SOFTWARE	("Software"), 
+	ARCHIVE		("Archives");
 	
 	private final String type;
 	
