@@ -1,6 +1,7 @@
 package com.rommer.vadim;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,17 +29,16 @@ public class ContentOrganizer {
 	
 	/**
 	 * Creates an instance of the ContentOrganizer class. 
-	 * Reads the current content of the folder <path>
-	 * Organizes its content and sets up a folder listener.
+	 * Reads the current content of the folder <path> and sets up a folder listener.
 	 * 
 	 * @param String path - the path to the folder represented as a String.
 	 */
 	private ContentOrganizer(String path) {
-		
+		this.path = Paths.get(path);
 	}
 	
 	private ContentOrganizer(Path path) {
-		
+		this.path = path;
 	}
 	
 	public Path getPath() { return this.path; }
