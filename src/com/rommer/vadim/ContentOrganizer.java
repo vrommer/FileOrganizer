@@ -1,11 +1,27 @@
 package com.rommer.vadim;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ContentOrganizer {
 	
+	private Map<String, ContentType> suffixMap;
 	private Path path;
 	
+	{
+		suffixMap = new HashMap<>();
+		suffixMap.put("pdf", ContentType.BOOK);
+		suffixMap.put("epub", ContentType.BOOK);
+		suffixMap.put("iso", ContentType.IMAGE);
+		suffixMap.put("mkv", ContentType.VIDEO);
+		suffixMap.put("avi", ContentType.VIDEO);
+		suffixMap.put("mp4", ContentType.VIDEO);
+		suffixMap.put("exe", ContentType.SOFTWARE);
+		suffixMap.put("rar", ContentType.ARCHIVE);
+		suffixMap.put("zip", ContentType.ARCHIVE);
+		suffixMap.put("7z", ContentType.ARCHIVE);
+	}
 	private ContentOrganizer() {
 		
 	}
