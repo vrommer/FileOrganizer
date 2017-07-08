@@ -23,9 +23,6 @@ public class ContentOrganizer {
 		suffixMap.put("zip", ContentType.ARCHIVE);
 		suffixMap.put("7z", ContentType.ARCHIVE);
 	}
-	private ContentOrganizer() {
-		
-	}
 	
 	/**
 	 * Creates an instance of the ContentOrganizer class. 
@@ -45,18 +42,24 @@ public class ContentOrganizer {
 	
 	public void setPath() {  }
 	
-	public static ContentOrganizer getOrganizer() {
-		return new ContentOrganizer();
+	public static ContentOrganizer getOrganizer(String path) {
+		return new ContentOrganizer(path);
+	}
+	
+	public static ContentOrganizer getOrganizer(Path path) {
+		return new ContentOrganizer(path);
 	}
 	
 	/**
 	 * Organizes a content of the folder.
 	 */
 	public void organize() {
+		System.out.println("Organizing");
 		boolean newContent = true;
 		while(newContent) {
 			getContentType();
 			moveContentToRelevantFolder();	
+			newContent = false;
 		}	
 	}
 	
@@ -65,6 +68,7 @@ public class ContentOrganizer {
 	 */
 	private void moveContentToRelevantFolder() {
 		// TODO Auto-generated method stub
+		System.out.println("Moving content to elevant folders");
 		
 	}
 	
@@ -75,6 +79,7 @@ public class ContentOrganizer {
 		// Read a folder and get all extensions.
 		// Find out the type of content.
 		// return the type of content.	
+		System.out.println("Getting content");
 	}
 }
 
