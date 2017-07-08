@@ -1,4 +1,4 @@
-package com.rommer.vadim;
+package com.rommer.vadim.app;
 
 import java.awt.List;
 import java.io.IOException;
@@ -84,9 +84,10 @@ public class ContentOrganizer {
 	}	
 
 	private Map<String, ArrayList<Path>> getRootContent() throws IOException {
+		int maxDepth = 1;
 		Set<FileVisitOption> options = new HashSet<>();
 		SimpleFileVisitor<Path> visitor = new OrganizerFileVisitor();
-		Files.walkFileTree(path, options, 1, visitor);
+		Files.walkFileTree(this.path, options, maxDepth, visitor);
 		return ((OrganizerFileVisitor) visitor).getVisitResults();
 	}
 

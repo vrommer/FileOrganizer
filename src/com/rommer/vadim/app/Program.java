@@ -1,4 +1,4 @@
-package com.rommer.vadim;
+package com.rommer.vadim.app;
 
 import java.io.IOException;
 
