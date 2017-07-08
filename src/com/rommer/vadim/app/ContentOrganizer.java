@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,9 @@ public class ContentOrganizer {
 		suffixMap.put("pdf", ContentType.BOOK);
 		suffixMap.put("epub", ContentType.BOOK);
 		suffixMap.put("iso", ContentType.IMAGE);
+		suffixMap.put("img", ContentType.IMAGE);
+		suffixMap.put("bin", ContentType.IMAGE);
+		suffixMap.put("cue", ContentType.IMAGE);
 		suffixMap.put("mkv", ContentType.VIDEO);
 		suffixMap.put("avi", ContentType.VIDEO);
 		suffixMap.put("mp4", ContentType.VIDEO);
@@ -71,13 +75,13 @@ public class ContentOrganizer {
 	public void organize() throws IOException {
 		Map<String, ArrayList<Path>> rootContent = getRootContent();
 		Map<ContentType, ArrayList<Path>> classifiedContent = classifyContent(rootContent);
-		moveContentToRelevantFolder(classifiedContent);	
+		moveContentToRelevantFolders(classifiedContent);	
 	}	
 	
 	private void setUpContentFolders() {
 		for (ContentType type: ContentType.values()) {
 			pathsMap.put(type, Paths.get(this.path.getParent().toString(), type.toString()));
-			System.out.println(String.format("Setting up folder %s for %s", pathsMap.get(type), type));
+			// System.out.println(String.format("Setting up folder %s for %s", pathsMap.get(type), type));
 		}
 	}
 
@@ -89,13 +93,7 @@ public class ContentOrganizer {
 		}
 		classifyFiles(rootContent.get(FILES), classifiedContent);
 		classifyFolders(rootContent.get(FOLDERS), classifiedContent);
-		classifiedContent.forEach((contentType, contentList)->{
-			System.out.println("**************************** List of all " + contentType + " files: ****************************");
-			contentList.forEach(file->{
-				System.out.println(file.getFileName());
-			});
-		});
-		return null;
+		return classifiedContent;
 	}
 
 	private void classifyFolders(ArrayList<Path> foldersList, Map<ContentType, ArrayList<Path>> classifiedContent) {
@@ -120,7 +118,7 @@ public class ContentOrganizer {
 					classifiedContent.get(ContentType.BOOK).add(folder);
 				}
 				else if (typesSetInFolder.contains(ContentType.ARCHIVE)) {
-					classifiedContent.get(ContentType.ARCHIVE).add(folder);
+					;
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -136,9 +134,26 @@ public class ContentOrganizer {
 		});		
 	}
 
-	private void moveContentToRelevantFolder(Map<ContentType, ArrayList<Path>> classifiedContent) {
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Moves content to the relevant content folder.
+	 */
+	private void moveContentToRelevantFolders(Map<ContentType, ArrayList<Path>> classifiedContent) {
+		classifiedContent.forEach((contentType, pathsList)->{
+			pathsList.forEach(path->{
+				Path targetParent = this.pathsMap.get(contentType);
+				Path targetPath = Paths.get(targetParent.toString(),path.getFileName().toString());
+				try {
+					if (!Files.exists(targetParent)) {
+						Files.createDirectories(targetParent);
+					}
+					System.out.println(String.format("Source: %s\nTraget: %s\n", path, targetPath));
+					Files.move(path, targetPath, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+		});
 	}
 
 	private Map<String, ArrayList<Path>> getAllContentInFolder(Path folder) throws IOException {
@@ -155,15 +170,6 @@ public class ContentOrganizer {
 		return ((OrganizerFileVisitor) visitor).getVisitResults();
 	}
 
-	/**
-	 * Moves a single content (file or directory) to the relevant content folder.
-	 */
-	private void moveContentToRelevantFolder() {
-		// TODO Auto-generated method stub
-		System.out.println("Moving content to relevant folders");
-		
-	}
-	
 	private ContentType getContentType(Path file) {
 		String[] nameParts = file.getFileName().toString().split("[.]");
 		String suffix = nameParts[nameParts.length-1];
